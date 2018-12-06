@@ -78,6 +78,7 @@ namespace appbase {
 
          void                  startup();
          void                  shutdown();
+         void                 set_http_separate();
 
          /**
           *  Wait until quit(), SIGINT or SIGTERM and then shutdown

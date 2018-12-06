@@ -34,7 +34,7 @@ class application_impl {
 application::application()
 :my(new application_impl()){
    io_serv = std::make_shared<boost::asio::io_service>();
-   io_serv_basic = std::make_shared<boost::asio::io_service>();
+   io_serv_basic=io_serv;
 }
 
 application::~application() { }
@@ -261,6 +261,10 @@ void application::exec(size_t num_threads) {
    }
 
    shutdown(); /// perform synchronous shutdown
+}
+
+void application::set_http_separate(){
+   io_serv_basic = std::make_shared<boost::asio::io_service>();
 }
 
 void application::write_default_config(const bfs::path& cfg_file) {
