@@ -34,6 +34,7 @@ class application_impl {
 application::application()
 :my(new application_impl()){
    io_serv = std::make_shared<boost::asio::io_service>();
+   io_serv_basic = std::make_shared<boost::asio::io_service>();
 }
 
 application::~application() { }
@@ -220,7 +221,7 @@ void application::quit() {
    io_serv->stop();
 }
 
-void application::exec() {
+void application::exec(size_t num_threads) {
    std::shared_ptr<boost::asio::signal_set> sigint_set(new boost::asio::signal_set(*io_serv, SIGINT));
    sigint_set->async_wait([sigint_set,this](const boost::system::error_code& err, int num) {
      quit();
@@ -239,7 +240,25 @@ void application::exec() {
      sigpipe_set->cancel();
    });
 
-   io_serv->run();
+   if (num_threads == 1)
+   {
+      io_serv->run();
+   }
+   else
+   {
+      std::vector<boost::shared_ptr<std::thread>> ts;
+      for (size_t i = 0; i < num_threads; i++)
+      {
+         boost::shared_ptr<std::thread> thread1(new std::thread(
+             boost::bind(&boost::asio::io_service::run, io_serv_basic)));
+         ts.push_back(thread1);
+      }
+      io_serv->run();
+      for (size_t i = 0; i < num_threads; i++)
+      {
+         ts[i]->join();
+      }
+   }
 
    shutdown(); /// perform synchronous shutdown
 }

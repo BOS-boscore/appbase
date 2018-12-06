@@ -82,7 +82,7 @@ namespace appbase {
          /**
           *  Wait until quit(), SIGINT or SIGTERM and then shutdown
           */
-         void                 exec();
+         void                 exec(size_t num_threads=1);
          void                 quit();
 
          static application&  instance();
@@ -157,6 +157,8 @@ namespace appbase {
          }
 
          boost::asio::io_service& get_io_service() { return *io_serv; }
+         boost::asio::io_service& get_basic_io_service() { return *io_serv_basic; }
+
       protected:
          template<typename Impl>
          friend class plugin;
@@ -181,6 +183,7 @@ namespace appbase {
          map<std::type_index, erased_channel_ptr>  channels;
 
          std::shared_ptr<boost::asio::io_service>  io_serv;
+         std::shared_ptr<boost::asio::io_service>  io_serv_basic;
 
          void set_program_options();
          void write_default_config(const bfs::path& cfg_file);
