@@ -268,6 +268,8 @@ void application::exec(size_t num_threads) {
          boost::shared_ptr<std::thread> thread1(new std::thread(
              boost::bind(&boost::asio::io_service::run, io_serv_basic)));
          ts.push_back(thread1);
+         std::cout <<"###############################threading("<<i<<")#########################"<<std::endl;
+
       }
       io_serv->run();
       for (size_t i = 0; i < num_threads; i++)
