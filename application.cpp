@@ -214,11 +214,27 @@ void application::shutdown() {
    running_plugins.clear();
    initialized_plugins.clear();
    plugins.clear();
-   io_serv.reset();
+   if (io_serv == io_serv_basic)
+   {
+      io_serv.reset();
+   }
+   else
+   {
+      io_serv.reset();
+      io_serv_basic.reset();
+   }
 }
 
 void application::quit() {
-   io_serv->stop();
+   if (io_serv == io_serv_basic)
+   {
+      io_serv->stop();
+   }
+   else
+   {
+      io_serv->stop();
+      io_serv_basic->stop();
+   }
 }
 
 void application::exec(size_t num_threads) {
