@@ -262,6 +262,23 @@ void application::exec(size_t num_threads) {
    }
    else
    {
+   std::shared_ptr<boost::asio::signal_set> sigint_set_basic(new boost::asio::signal_set(*io_serv, SIGINT));
+   sigint_set->async_wait([sigint_set_basic,this](const boost::system::error_code& err, int num) {
+     quit();
+     sigint_set_basic->cancel();
+   });
+
+   std::shared_ptr<boost::asio::signal_set> sigterm_set_basic(new boost::asio::signal_set(*io_serv_basic, SIGTERM));
+   sigterm_set->async_wait([sigterm_set_basic,this](const boost::system::error_code& err, int num) {
+     quit();
+     sigterm_set_basic->cancel();
+   });
+
+   std::shared_ptr<boost::asio::signal_set> sigpipe_set_basic(new boost::asio::signal_set(*io_serv_basic, SIGPIPE));
+   sigpipe_set_basic->async_wait([sigpipe_set_basic,this](const boost::system::error_code& err, int num) {
+     quit();
+     sigpipe_set_basic->cancel();
+   });
       std::vector<boost::shared_ptr<std::thread>> ts;
       for (size_t i = 0; i < num_threads; i++)
       {
